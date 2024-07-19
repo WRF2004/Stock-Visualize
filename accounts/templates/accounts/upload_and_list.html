@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <title>Stock Visualize</title>
+    {% load static %}
+    <script src="{% static 'js/scripts.js' %}" defer></script>
+
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* Ensure minimum height is the viewport height */
+            width: 100%;
+        }
+
+        .upload-form {
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .last-login-info {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        form button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-form">
+            <h2>Upload File</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Upload</button>
+                {% if error %}
+                    <p style="color: red;">{{error}}</p>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="file-list">
+            <h2>Uploaded Files</h2>
+            {% if files %}
+                <ul>
+                    {% for file in files %}
+                        <li class="file-item">
+                            <span>{{ file.upload_time }} - {{ file }}</span>
+                            <form method="post" action="{% url 'delete_file' file.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit">Delete</button>
+                            </form>
+                            <form method="get" action="{% url 'visualize' file.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit">Visualize</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No files uploaded yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="last-login-info">
+            <h4>Last Login</h4>
+            <p>user: {{ username }}</p>
+            <p>login time: {{ last_login }}</p>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

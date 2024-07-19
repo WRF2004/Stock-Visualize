@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <title>Visualize Stock Data</title>
+    {% load static %}
+    <script src="https://cdn.staticfile.net/Chart.js/3.9.1/chart.js"></script>
+
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 61.8%;
+            margin: 0 auto;
+        }
+
+        canvas {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Stock Data Visualization</h2>
+        <canvas id="avgOpenPricesChart" width="200" height="100"></canvas>
+        <canvas id="avgClosePricesChart" width="400" height="200"></canvas>
+        <canvas id="maxPricesChart" width="400" height="200"></canvas>
+        <canvas id="minPricesChart" width="400" height="200"></canvas>
+        <canvas id="totalVolumeChart" width="400" height="200"></canvas>
+        <canvas id="changesChart" width="400" height="200"></canvas>
+        <canvas id="avgAmplitudeChart" width="400" height="200"></canvas>
+        <canvas id="avgTurnoverChart" width="400" height="200"></canvas>
+    </div>
+    {{ data|json_script:"stock-data" }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stockData = JSON.parse(document.getElementById('stock-data').textContent);
+            
+            const avgOpenPricesCtx = document.getElementById('avgOpenPricesChart').getContext('2d');
+            const avgClosePricesCtx = document.getElementById('avgClosePricesChart').getContext('2d');
+            const maxPricesCtx = document.getElementById('maxPricesChart').getContext('2d');
+            const minPricesCtx = document.getElementById('minPricesChart').getContext('2d');
+            const totalVolumeCtx = document.getElementById('totalVolumeChart').getContext('2d');
+            const changesCtx = document.getElementById('changesChart').getContext('2d');
+            const avgAmplitudeCtx = document.getElementById('avgAmplitudeChart').getContext('2d');
+            const avgTurnoverCtx = document.getElementById('avgTurnoverChart').getContext('2d');
+
+            new Chart(avgOpenPricesCtx, {
+                type: 'bar',
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                        label: 'Average Open Prices',
+                        data: stockData.avg_open_prices,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(avgClosePricesCtx, {
+                type: 'bar',
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                        label: 'Average Close Prices',
+                        data: stockData.avg_close_prices,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(maxPricesCtx, {
+                type: 'bar',
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                        label: 'Max Prices',
+                        data: stockData.max_prices,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(minPricesCtx, {
+                type: 'bar',
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                        label: 'Min Prices',
+                        data: stockData.min_prices,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(totalVolumeCtx, {
+                type: 'bar',
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                        label: 'Total Volume',
+                        data: stockData.total_volume,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(changesCtx, {
+                type: 'bar',
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                        label: 'Changes',
+                        data: stockData.changes,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(avgAmplitudeCtx, {
+                type: 'scatter', // 改为scatter类型
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                    label: 'Average Amplitude',
+                    data: stockData.stock_codes.map((code, index) => ({
+                    x: code, // 将股票代码作为x轴的值
+                    y: stockData.avg_amplitude[index], // 对应的平均振幅作为y轴的值
+                })),
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                pointRadius: 4, // 可选，设置散点图的点的半径
+            }]
+        },
+            options: {
+                scales: {
+                y: {
+                beginAtZero: true
+            },
+            x: { // 添加x轴配置
+                type: 'category',
+                ticks: {
+                    autoSkip: true
+                }
+            }
+        }
+    }
+});
+
+            new Chart(avgTurnoverCtx, {
+                type: 'bar',
+                data: {
+                    labels: stockData.stock_codes,
+                    datasets: [{
+                        label: 'Average Turnover',
+                        data: stockData.avg_turnover,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

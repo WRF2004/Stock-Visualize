@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Visualize</title>
+    <style>
+        body, html {
+            height: 100%; /* Full height */
+            margin: 0; /* No margins */
+            padding: 0; /* No paddings */
+            font-family: Arial, sans-serif; /* Font family */
+            background-color: #f0f0f0; /* Background color */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .t1 {
+            margin-bottom: 20px; /* Margin below title */
+        }
+
+        .t2 {
+            width: 100%;
+            max-width: 500px; /* Wider form */
+            padding: 30px; /* More padding inside the form */
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        .t3 {
+            margin-top: 20px;
+        }
+
+        .t4 {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="t1">
+            <h2>Stock Visualize</h2>
+        </div>
+
+        <div class="t2">
+            <form method="post">
+                {% csrf_token %}
+                <!-- Wrap each form field in a div with class 'form-group' -->
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <div class="t4">
+                    <button type="submit">登录</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="t3">
+            <p>Don't have an account? <a href="/register/">Register here</a></p>
+        </div>
+    </div>
+</body>
+</html>
