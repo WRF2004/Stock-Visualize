@@ -107,6 +107,28 @@ def visualize(request, file_id):
     avg_amplitude = df.groupby('股票代码')['振幅'].mean().tolist()
     avg_turnover = df.groupby('股票代码')['换手率'].mean().tolist()
 
+    stock_datas = {}
+    for code in stock_codes:
+        stock_df = df[df['股票代码'] == code]
+        stock_df['收盘价'].fillna(0, inplace=True)  # 替换 NaN 为 0
+        stock_df['振幅'].fillna(0, inplace=True)  # 替换 NaN 为 0
+        stock_df['换手率'].fillna(0, inplace=True)  # 替换 NaN 为 0
+
+        stock_datas[code] = {
+            'dates': stock_df['日期'].dt.strftime('%Y-%m-%d').tolist(),
+            'open_prices': stock_df['开盘价'].tolist(),
+            'close_prices': stock_df['收盘价'].tolist(),
+            'high_prices': stock_df['最高价'].tolist(),
+            'low_prices': stock_df['最低价'].tolist(),
+            'volumes': stock_df['交易量'].tolist(),
+            'amplitude': stock_df['振幅'].tolist(),
+            'turnover': stock_df['换手率'].tolist(),
+            'change_rate': stock_df['涨跌幅'].tolist(),
+            'sma_5': [x if pd.notnull(x) else None for x in stock_df['收盘价'].rolling(window=5).mean().tolist()],
+            'sma_10': [x if pd.notnull(x) else None for x in stock_df['收盘价'].rolling(window=10).mean().tolist()],
+            'sma_30': [x if pd.notnull(x) else None for x in stock_df['收盘价'].rolling(window=30).mean().tolist()]
+        }
+
     data = {
         'stock_codes': stock_codes,
         'avg_open_prices': avg_open_prices,
@@ -117,6 +139,7 @@ def visualize(request, file_id):
         'changes': changes,
         'avg_amplitude': avg_amplitude,
         'avg_turnover': avg_turnover,
+        'stock_datas': stock_datas
     }
 
     return render(request, 'accounts/visualize.html', {'data': data})

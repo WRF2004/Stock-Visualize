@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="">
+
 <head>
     <title>Visualize Stock Data</title>
     {% load static %}
     <script src="https://cdn.staticfile.net/Chart.js/3.9.1/chart.js"></script>
 
     <style>
-        body, html {
+        body,
+        html {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -20,8 +22,50 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            width: 61.8%;
+            width: 80%;
             margin: 0 auto;
+        }
+
+        .chart-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .slider {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .button {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: rgba(0, 0, 0, 0.3);
         }
 
         canvas {
@@ -29,23 +73,70 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h2>Stock Data Visualization</h2>
-        <canvas id="avgOpenPricesChart" width="200" height="100"></canvas>
-        <canvas id="avgClosePricesChart" width="400" height="200"></canvas>
-        <canvas id="maxPricesChart" width="400" height="200"></canvas>
-        <canvas id="minPricesChart" width="400" height="200"></canvas>
-        <canvas id="totalVolumeChart" width="400" height="200"></canvas>
-        <canvas id="changesChart" width="400" height="200"></canvas>
-        <canvas id="avgAmplitudeChart" width="400" height="200"></canvas>
-        <canvas id="avgTurnoverChart" width="400" height="200"></canvas>
+
+        <div>
+            <input type="text" id="stockCodeInput" placeholder="Enter stock code" />
+            <button id="searchButton">Search</button>
+        </div>
+
+        <div id="originalCharts">
+            <div class="chart-container">
+                <canvas id="avgOpenPricesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="avgClosePricesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="maxPricesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="minPricesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="totalVolumeChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="changesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="avgAmplitudeChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="avgTurnoverChart" width="800" height="400"></canvas>
+            </div>
+        </div>
+
+        <div id="individualStockChartContainer" class="slider" style="display:none;">
+            <div class="slides">
+                <div class="slide"><canvas id="individualStockChart1" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart2" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart3" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart4" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart5" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart6" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart7" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart8" width="800" height="400"></canvas></div>
+                <div class="slide"><canvas id="individualStockChart9" width="800" height="400"></canvas></div>
+            </div>
+            <div class="buttons">
+                <button class="button" id="prevButton">Prev</button>
+                <button class="button" id="nextButton">Next</button>
+            </div>
+        </div>
     </div>
+
     {{ data|json_script:"stock-data" }}
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const stockData = JSON.parse(document.getElementById('stock-data').textContent);
-            
+
+            console.log(stockData); // Debug log
+
             const avgOpenPricesCtx = document.getElementById('avgOpenPricesChart').getContext('2d');
             const avgClosePricesCtx = document.getElementById('avgClosePricesChart').getContext('2d');
             const maxPricesCtx = document.getElementById('maxPricesChart').getContext('2d');
@@ -55,184 +146,223 @@
             const avgAmplitudeCtx = document.getElementById('avgAmplitudeChart').getContext('2d');
             const avgTurnoverCtx = document.getElementById('avgTurnoverChart').getContext('2d');
 
-            new Chart(avgOpenPricesCtx, {
-                type: 'bar',
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                        label: 'Average Open Prices',
-                        data: stockData.avg_open_prices,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+            const individualStockCtx1 = document.getElementById('individualStockChart1').getContext('2d');
+            const individualStockCtx2 = document.getElementById('individualStockChart2').getContext('2d');
+            const individualStockCtx3 = document.getElementById('individualStockChart3').getContext('2d');
+            const individualStockCtx4 = document.getElementById('individualStockChart4').getContext('2d');
+            const individualStockCtx5 = document.getElementById('individualStockChart5').getContext('2d');
+            const individualStockCtx6 = document.getElementById('individualStockChart6').getContext('2d');
+            const individualStockCtx7 = document.getElementById('individualStockChart7').getContext('2d');
+            const individualStockCtx8 = document.getElementById('individualStockChart8').getContext('2d');
+            const individualStockCtx9 = document.getElementById('individualStockChart9').getContext('2d');
+
+            let individualStockCharts = [];
+
+            function createBarChart(ctx, label, data, labels) {
+                return new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
-
-            new Chart(avgClosePricesCtx, {
-                type: 'bar',
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                        label: 'Average Close Prices',
-                        data: stockData.avg_close_prices,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            new Chart(maxPricesCtx, {
-                type: 'bar',
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                        label: 'Max Prices',
-                        data: stockData.max_prices,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            new Chart(minPricesCtx, {
-                type: 'bar',
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                        label: 'Min Prices',
-                        data: stockData.min_prices,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            new Chart(totalVolumeCtx, {
-                type: 'bar',
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                        label: 'Total Volume',
-                        data: stockData.total_volume,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            new Chart(changesCtx, {
-                type: 'bar',
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                        label: 'Changes',
-                        data: stockData.changes,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            new Chart(avgAmplitudeCtx, {
-                type: 'scatter', // 改为scatter类型
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                    label: 'Average Amplitude',
-                    data: stockData.stock_codes.map((code, index) => ({
-                    x: code, // 将股票代码作为x轴的值
-                    y: stockData.avg_amplitude[index], // 对应的平均振幅作为y轴的值
-                })),
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-                pointRadius: 4, // 可选，设置散点图的点的半径
-            }]
-        },
-            options: {
-                scales: {
-                y: {
-                beginAtZero: true
-            },
-            x: { // 添加x轴配置
-                type: 'category',
-                ticks: {
-                    autoSkip: true
-                }
+                });
             }
-        }
-    }
-});
 
-            new Chart(avgTurnoverCtx, {
-                type: 'bar',
-                data: {
-                    labels: stockData.stock_codes,
-                    datasets: [{
-                        label: 'Average Turnover',
-                        data: stockData.avg_turnover,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+            function createScatterChart(ctx, label, data, labels) {
+                return new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        labels: labels, // 使用提供的labels作为分类标签
+                        datasets: [{
+                            label: label,
+                            data: data.map((value, index) =>
+                        ({ // 将原始数据转换为{x: label, y: value}格式
+                                x: index, // 使用索引是因为Chart.js需要数字索引，分类标签会根据索引映射
+                                y: value
+                            })),
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'category', // 设置x轴为分类轴
+                                ticks: {
+                                    callback: function (value, index, values) {
+                                        // 返回对应的分类标签
+                                        return labels[value];
+                                    }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
+                });
+            }
+
+            function createLineChart(ctx, label, data, labels) {
+                return new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createMultLineChart(ctx, dataset, labels) {
+                return new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: dataset.map(data => ({
+                            label: data.label,
+                            data: data.data,
+                            borderColor: data.borderColor ||
+                            'rgba(75, 192, 192, 1)', // 可以为每条线设置不同的颜色
+                            borderWidth: 1,
+                            fill: false
+                        }))
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            createBarChart(avgOpenPricesCtx, 'Average Open Prices', stockData.avg_open_prices, stockData
+                .stock_codes);
+            createBarChart(avgClosePricesCtx, 'Average Close Prices', stockData.avg_close_prices, stockData
+                .stock_codes);
+            createBarChart(maxPricesCtx, 'Max Prices', stockData.max_prices, stockData.stock_codes);
+            createBarChart(minPricesCtx, 'Min Prices', stockData.min_prices, stockData.stock_codes);
+            createBarChart(totalVolumeCtx, 'Total Volume', stockData.total_volume, stockData.stock_codes);
+            createBarChart(changesCtx, 'Changes', stockData.changes, stockData.stock_codes);
+            createScatterChart(avgAmplitudeCtx, 'Average Amplitude', stockData.avg_amplitude, stockData
+                .stock_codes);
+            createBarChart(avgTurnoverCtx, 'Average Turnover', stockData.avg_turnover, stockData.stock_codes);
+
+            function updateIndividualStockCharts(stockCode) {
+                if (individualStockCharts.length > 0) {
+                    individualStockCharts.forEach(chart => chart.destroy());
+                }
+                individualStockCharts = [];
+
+                const stock = stockData.stock_datas[stockCode];
+                individualStockCharts.push(createLineChart(individualStockCtx1, 'Open Prices', stock
+                    .open_prices, stock.dates));
+                individualStockCharts.push(createLineChart(individualStockCtx2, 'Close Prices', stock
+                    .close_prices, stock.dates));
+                individualStockCharts.push(createLineChart(individualStockCtx3, 'High Prices', stock
+                    .high_prices, stock.dates));
+                individualStockCharts.push(createLineChart(individualStockCtx4, 'Low Prices', stock.low_prices,
+                    stock.dates));
+                individualStockCharts.push(createBarChart(individualStockCtx5, 'Volume', stock.volumes, stock
+                    .dates));
+                individualStockCharts.push(createScatterChart(individualStockCtx6, 'Changes', stock.change_rate,
+                    stock.dates));
+                individualStockCharts.push(createLineChart(individualStockCtx7, 'Amplitude', stock.amplitude,
+                    stock.dates));
+                individualStockCharts.push(createLineChart(individualStockCtx8, 'Turnover', stock.turnover,
+                    stock.dates));
+
+                const dataset = [{
+                        label: 'Open Prices',
+                        data: stock.open_prices,
+                        borderColor: 'rgb(0, 162, 232)'
+                    },
+                    {
+                        label: 'Close Prices',
+                        data: stock.close_prices,
+                        borderColor: 'rgb(255, 127, 39)'
+                    },
+                    {
+                        label: 'High Prices',
+                        data: stock.high_prices,
+                        borderColor: 'rgb(142, 68, 173)'
+                    },
+                    {
+                        label: 'Low Prices',
+                        data: stock.low_prices,
+                        borderColor: 'rgb(35, 155, 86)'
+                    }
+                ]
+                individualStockCharts.push(createMultLineChart(individualStockCtx9, dataset, stock.dates));
+            }
+
+            document.getElementById('searchButton').addEventListener('click', () => {
+                const stockCode = document.getElementById('stockCodeInput').value;
+                if (stockCode in stockData.stock_datas) {
+                    document.getElementById('originalCharts').style.display = 'none';
+                    document.getElementById('individualStockChartContainer').style.display = 'block';
+                    updateIndividualStockCharts(stockCode);
+                } else {
+                    alert('Invalid stock code');
+                }
+            });
+
+            let currentIndex = 0;
+            const slides = document.querySelector('.slides');
+            const totalSlides = slides.children.length;
+            document.getElementById('prevButton').addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                    } else {
+                        currentIndex = totalSlides - 1;
+                    }
+                    document.querySelector('.slides').style.transform =
+                        `translateX(-${currentIndex * 100}%)`;
+                }
+            });
+
+            document.getElementById('nextButton').addEventListener('click', () => {
+                if (currentIndex < individualStockCharts.length - 1) {
+                    if (currentIndex < totalSlides - 1) {
+                        currentIndex++;
+                    } else {
+                        currentIndex = 0;
+                    }
+                    document.querySelector('.slides').style.transform =
+                        `translateX(-${currentIndex * 100}%)`;
                 }
             });
         });
     </script>
 </body>
+
 </html>
