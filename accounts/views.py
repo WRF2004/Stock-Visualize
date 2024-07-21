@@ -114,12 +114,20 @@ def visualize(request, file_id):
         stock_df['振幅'].fillna(0, inplace=True)  # 替换 NaN 为 0
         stock_df['换手率'].fillna(0, inplace=True)  # 替换 NaN 为 0
 
+        open_prices = stock_df['开盘价'].tolist()
+        close_prices = stock_df['收盘价'].tolist()
+        high_prices = stock_df['最高价'].tolist()
+        low_prices = stock_df['最低价'].tolist()
+
+        ochl = [list(t) for t in zip(open_prices, close_prices, high_prices, low_prices)]
+
         stock_datas[code] = {
             'dates': stock_df['日期'].dt.strftime('%Y-%m-%d').tolist(),
             'open_prices': stock_df['开盘价'].tolist(),
             'close_prices': stock_df['收盘价'].tolist(),
             'high_prices': stock_df['最高价'].tolist(),
             'low_prices': stock_df['最低价'].tolist(),
+            'ochl': ochl,
             'volumes': stock_df['交易量'].tolist(),
             'amplitude': stock_df['振幅'].tolist(),
             'turnover': stock_df['换手率'].tolist(),

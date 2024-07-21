@@ -4,7 +4,8 @@
 <head>
     <title>Visualize Stock Data</title>
     {% load static %}
-    <script src="https://cdn.staticfile.net/Chart.js/3.9.1/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 
     <style>
         body,
@@ -13,7 +14,10 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #21202D;
+            /* 深色背景 */
+            color: #ffffff;
+            /* 浅色文本 */
         }
 
         .container {
@@ -57,7 +61,7 @@
         }
 
         .button {
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: #21202D;
             color: white;
             border: none;
             padding: 10px;
@@ -65,7 +69,7 @@
         }
 
         .button:hover {
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: #21202D;
         }
 
         canvas {
@@ -84,35 +88,19 @@
         </div>
 
         <div id="originalCharts">
-            <div class="chart-container">
-                <canvas id="avgOpenPricesChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="avgClosePricesChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="maxPricesChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="minPricesChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="totalVolumeChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="changesChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="avgAmplitudeChart" width="400" height="200"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="avgTurnoverChart" width="800" height="400"></canvas>
-            </div>
+            <canvas id="avgOpenPricesChart" width="800" height="400"></canvas>
+            <canvas id="avgClosePricesChart" width="800" height="400"></canvas>
+            <canvas id="maxPricesChart" width="800" height="400"></canvas>
+            <canvas id="minPricesChart" width="800" height="400"></canvas>
+            <canvas id="totalVolumeChart" width="800" height="400"></canvas>
+            <canvas id="changesChart" width="800" height="400"></canvas>
+            <canvas id="avgAmplitudeChart" width="800" height="400"></canvas>
+            <canvas id="avgTurnoverChart" width="800" height="400"></canvas>
         </div>
 
         <div id="individualStockChartContainer" class="slider" style="display:none;">
             <div class="slides">
-                <div class="slide"><canvas id="individualStockChart1" width="800" height="400"></canvas></div>
+                <div class="slide" id="individualStockChart1" style="width: 800px;height:750px;"></div>
                 <div class="slide"><canvas id="individualStockChart2" width="800" height="400"></canvas></div>
                 <div class="slide"><canvas id="individualStockChart3" width="800" height="400"></canvas></div>
                 <div class="slide"><canvas id="individualStockChart4" width="800" height="400"></canvas></div>
@@ -121,6 +109,9 @@
                 <div class="slide"><canvas id="individualStockChart7" width="800" height="400"></canvas></div>
                 <div class="slide"><canvas id="individualStockChart8" width="800" height="400"></canvas></div>
                 <div class="slide"><canvas id="individualStockChart9" width="800" height="400"></canvas></div>
+
+                <div class="slide" id="individualStockChart10" style="width: 800px;height:750px;"></div>
+
             </div>
             <div class="buttons">
                 <button class="button" id="prevButton">Prev</button>
@@ -146,7 +137,7 @@
             const avgAmplitudeCtx = document.getElementById('avgAmplitudeChart').getContext('2d');
             const avgTurnoverCtx = document.getElementById('avgTurnoverChart').getContext('2d');
 
-            const individualStockCtx1 = document.getElementById('individualStockChart1').getContext('2d');
+            const individualStockCtx1 = document.getElementById('individualStockChart1');
             const individualStockCtx2 = document.getElementById('individualStockChart2').getContext('2d');
             const individualStockCtx3 = document.getElementById('individualStockChart3').getContext('2d');
             const individualStockCtx4 = document.getElementById('individualStockChart4').getContext('2d');
@@ -155,6 +146,8 @@
             const individualStockCtx7 = document.getElementById('individualStockChart7').getContext('2d');
             const individualStockCtx8 = document.getElementById('individualStockChart8').getContext('2d');
             const individualStockCtx9 = document.getElementById('individualStockChart9').getContext('2d');
+            const individualStockCtx10 = document.getElementById('individualStockChart10');
+
 
             let individualStockCharts = [];
 
@@ -166,8 +159,8 @@
                         datasets: [{
                             label: label,
                             data: data,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(255, 192, 203, 0.2)',
+                            borderColor: 'rgb(255, 0, 0)',
                             borderWidth: 1
                         }]
                     },
@@ -189,12 +182,12 @@
                         datasets: [{
                             label: label,
                             data: data.map((value, index) =>
-                        ({ // 将原始数据转换为{x: label, y: value}格式
-                                x: index, // 使用索引是因为Chart.js需要数字索引，分类标签会根据索引映射
-                                y: value
-                            })),
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                                ({ // 将原始数据转换为{x: label, y: value}格式
+                                    x: index, // 使用索引是因为Chart.js需要数字索引，分类标签会根据索引映射
+                                    y: value
+                                })),
+                            backgroundColor: 'rgba(255, 192, 203, 0.2)',
+                            borderColor: 'rgb(255, 0, 0)',
                             borderWidth: 1
                         }]
                     },
@@ -211,7 +204,8 @@
                             },
                             y: {
                                 beginAtZero: true
-                            }
+                            },
+                            pointRadius: 0.1
                         }
                     }
                 });
@@ -225,7 +219,7 @@
                         datasets: [{
                             label: label,
                             data: data,
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: 'rgb(255, 51, 51)',
                             borderWidth: 1,
                             fill: false
                         }]
@@ -235,34 +229,314 @@
                             y: {
                                 beginAtZero: true
                             }
-                        }
+                        },
+                        pointRadius: 0.5
                     }
                 });
             }
 
-            function createMultLineChart(ctx, dataset, labels) {
-                return new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: dataset.map(data => ({
-                            label: data.label,
-                            data: data.data,
-                            borderColor: data.borderColor ||
-                            'rgba(75, 192, 192, 1)', // 可以为每条线设置不同的颜色
-                            borderWidth: 1,
-                            fill: false
-                        }))
+            function detectCrossovers(sma5, sma10, sma30, labels) {
+                let goldenCrosses5_10 = [];
+                let deathCrosses5_10 = [];
+                let goldenCrosses5_30 = [];
+                let deathCrosses5_30 = [];
+                let goldenCrosses10_30 = [];
+                let deathCrosses10_30 = [];
+
+                for (let i = 1; i < sma5.length; i++) {
+                    // 检测SMA 5和SMA 10之间的交叉
+                    if (sma5[i - 1] <= sma10[i - 1] && sma5[i] > sma10[i]) {
+                        goldenCrosses5_10.push([labels[i], sma5[i]]);
+                    } else if (sma5[i - 1] >= sma10[i - 1] && sma5[i] < sma10[i]) {
+                        deathCrosses5_10.push([labels[i], sma5[i]]);
+                    }
+
+                    // 检测SMA 5和SMA 30之间的交叉
+                    if (sma5[i - 1] <= sma30[i - 1] && sma5[i] > sma30[i]) {
+                        goldenCrosses5_30.push([labels[i], sma5[i]]);
+                    } else if (sma5[i - 1] >= sma30[i - 1] && sma5[i] < sma30[i]) {
+                        deathCrosses5_30.push([labels[i], sma5[i]]);
+                    }
+
+                    // 检测SMA 10和SMA 30之间的交叉
+                    if (sma10[i - 1] <= sma30[i - 1] && sma10[i] > sma30[i]) {
+                        goldenCrosses10_30.push([labels[i], sma10[i]]);
+                    } else if (sma10[i - 1] >= sma30[i - 1] && sma10[i] < sma30[i]) {
+                        deathCrosses10_30.push([labels[i], sma10[i]]);
+                    }
+                }
+
+                return {
+                    goldenCrosses5_10,
+                    deathCrosses5_10,
+                    goldenCrosses5_30,
+                    deathCrosses5_30,
+                    goldenCrosses10_30,
+                    deathCrosses10_30
+                };
+            }
+
+            function createMultLineChart(ctx, sma_5, sma_10, sma_30, labels) {
+                var myChart = echarts.init(ctx);
+                const crossovers = detectCrossovers(sma_5, sma_10, sma_30, labels);
+                var option = {
+                    xAxis: {
+                        type: 'category',
+                        data: labels,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#8392A5'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#8392A5'
+                        }
                     },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                    yAxis: {
+                        scale: true,
+                        boundaryGap: ['20%', '20%'],
+                        axisLine: {
+                            lineStyle: {
+                                color: '#8392A5'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#8392A5'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#2F323F'
                             }
                         }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross'
+                        }
+                    },
+                    legend: {
+                        top: 30,
+                        data: ['SMA 5', 'SMA 10', 'SMA 30'],
+                        textStyle: {
+                            color: '#8392A5'
+                        }
+                    },
+                    series: [{
+                            name: 'SMA 5',
+                            type: 'line',
+                            smooth: true,
+                            data: sma_5,
+                            lineStyle: {
+                                normal: {
+                                    width: 1,
+                                    color: '#c23531'
+                                }
+                            }
+                        },
+                        {
+                            name: 'SMA 10',
+                            type: 'line',
+                            smooth: true,
+                            data: sma_10,
+                            lineStyle: {
+                                normal: {
+                                    width: 1,
+                                    color: '#4A90E2'
+                                }
+                            }
+                        },
+                        {
+                            name: 'SMA 30',
+                            type: 'line',
+                            smooth: true,
+                            data: sma_30,
+                            lineStyle: {
+                                normal: {
+                                    width: 1,
+                                    color: '#F5A623'
+                                }
+                            }
+                        },
+                        {
+                            name: 'Golden Cross 5-10',
+                            type: 'scatter',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'gold'
+                            },
+                            data: crossovers.goldenCrosses5_10,
+                            z: 10
+                        },
+                        {
+                            name: 'Death Cross 5-10',
+                            type: 'scatter',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'red'
+                            },
+                            data: crossovers.deathCrosses5_10,
+                            z: 10
+                        },
+                        {
+                            name: 'Golden Cross 5-30',
+                            type: 'scatter',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'gold'
+                            },
+                            data: crossovers.goldenCrosses5_30,
+                            z: 10
+                        },
+                        {
+                            name: 'Death Cross 5-30',
+                            type: 'scatter',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'red'
+                            },
+                            data: crossovers.deathCrosses5_30,
+                            z: 10
+                        },
+                        {
+                            name: 'Golden Cross 10-30',
+                            type: 'scatter',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'gold'
+                            },
+                            data: crossovers.goldenCrosses10_30,
+                            z: 10
+                        },
+                        {
+                            name: 'Death Cross 10-30',
+                            type: 'scatter',
+                            symbolSize: 10,
+                            itemStyle: {
+                                color: 'red'
+                            },
+                            data: crossovers.deathCrosses10_30,
+                            z: 10
+                        }
+                    ],
+                    backgroundColor: '#21202D',
+                    textStyle: {
+                        color: '#8392A5'
                     }
-                });
+                };
+
+                myChart.setOption(option);
+                return myChart;
             }
+
+            function createKLineChart(ctx, ochl, sma_5, sma_10, sma_30, labels) {
+                var myChart = echarts.init(ctx);
+
+                var option = {
+                    xAxis: {
+                        type: 'category',
+                        data: labels,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#8392A5'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#8392A5'
+                        }
+                    },
+                    yAxis: {
+                        scale: true,
+                        boundaryGap: ['20%', '20%'],
+                        axisLine: {
+                            lineStyle: {
+                                color: '#8392A5'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#8392A5'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#2F323F'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross'
+                        }
+                    },
+                    legend: {
+                        top: 30,
+                        data: ['K Line', 'SMA 5', 'SMA 10', 'SMA 30'],
+                        textStyle: {
+                            color: '#8392A5'
+                        }
+                    },
+                    series: [{
+                            name: 'K Line',
+                            type: 'candlestick',
+                            data: ochl.map(function (item) {
+                                return [item[0], item[1], item[2], item[3]];
+                            }),
+                            itemStyle: {
+                                normal: {
+                                    color: '#00da3c', // 阳线颜色
+                                    color0: '#ec0000', // 阴线颜色
+                                    borderColor: '#008F28',
+                                    borderColor0: '#8A0000'
+                                }
+                            }
+                        },
+                        {
+                            name: 'SMA 5',
+                            type: 'line',
+                            smooth: true,
+                            data: sma_5,
+                            lineStyle: {
+                                normal: {
+                                    width: 1,
+                                    color: '#c23531'
+                                }
+                            }
+                        },
+                        {
+                            name: 'SMA 10',
+                            type: 'line',
+                            smooth: true,
+                            data: sma_10,
+                            lineStyle: {
+                                normal: {
+                                    width: 1,
+                                    color: '#4A90E2'
+                                }
+                            }
+                        },
+                        {
+                            name: 'SMA 30',
+                            type: 'line',
+                            smooth: true,
+                            data: sma_30,
+                            lineStyle: {
+                                normal: {
+                                    width: 1,
+                                    color: '#F5A623'
+                                }
+                            }
+                        }
+                    ],
+                    backgroundColor: '#21202D',
+                    textStyle: {
+                        color: '#8392A5'
+                    }
+                };
+
+                myChart.setOption(option);
+                return myChart;
+            }
+
 
             createBarChart(avgOpenPricesCtx, 'Average Open Prices', stockData.avg_open_prices, stockData
                 .stock_codes);
@@ -278,50 +552,47 @@
 
             function updateIndividualStockCharts(stockCode) {
                 if (individualStockCharts.length > 0) {
-                    individualStockCharts.forEach(chart => chart.destroy());
+                    individualStockCharts.forEach(chart => {
+                        if (chart.dispose) {
+                            // 适用于 ECharts 实例
+                            chart.dispose();
+                        } else if (chart.destroy) {
+                            // 适用于 Chart.js 实例
+                            chart.destroy();
+                        }
+                    });
                 }
                 individualStockCharts = [];
 
                 const stock = stockData.stock_datas[stockCode];
-                individualStockCharts.push(createLineChart(individualStockCtx1, 'Open Prices', stock
+
+                individualStockCharts.push(createKLineChart(individualStockCtx1, stock.ochl, stock.sma_5, stock
+                    .sma_10, stock.sma_30, stock.dates));
+                individualStockCharts.push(createLineChart(individualStockCtx2, 'Open Prices', stock
                     .open_prices, stock.dates));
-                individualStockCharts.push(createLineChart(individualStockCtx2, 'Close Prices', stock
+                individualStockCharts.push(createLineChart(individualStockCtx3, 'Close Prices', stock
                     .close_prices, stock.dates));
-                individualStockCharts.push(createLineChart(individualStockCtx3, 'High Prices', stock
+                individualStockCharts.push(createLineChart(individualStockCtx4, 'High Prices', stock
                     .high_prices, stock.dates));
-                individualStockCharts.push(createLineChart(individualStockCtx4, 'Low Prices', stock.low_prices,
+                individualStockCharts.push(createLineChart(individualStockCtx5, 'Low Prices', stock.low_prices,
                     stock.dates));
-                individualStockCharts.push(createBarChart(individualStockCtx5, 'Volume', stock.volumes, stock
+                individualStockCharts.push(createBarChart(individualStockCtx6, 'Volume', stock.volumes, stock
                     .dates));
-                individualStockCharts.push(createScatterChart(individualStockCtx6, 'Changes', stock.change_rate,
+                individualStockCharts.push(createScatterChart(individualStockCtx7, 'Changes', stock.change_rate,
                     stock.dates));
-                individualStockCharts.push(createLineChart(individualStockCtx7, 'Amplitude', stock.amplitude,
-                    stock.dates));
-                individualStockCharts.push(createLineChart(individualStockCtx8, 'Turnover', stock.turnover,
+                individualStockCharts.push(createLineChart(individualStockCtx8, 'Amplitude', stock.amplitude,
                     stock.dates));
 
-                const dataset = [{
-                        label: 'Open Prices',
-                        data: stock.open_prices,
-                        borderColor: 'rgb(0, 162, 232)'
-                    },
-                    {
-                        label: 'Close Prices',
-                        data: stock.close_prices,
-                        borderColor: 'rgb(255, 127, 39)'
-                    },
-                    {
-                        label: 'High Prices',
-                        data: stock.high_prices,
-                        borderColor: 'rgb(142, 68, 173)'
-                    },
-                    {
-                        label: 'Low Prices',
-                        data: stock.low_prices,
-                        borderColor: 'rgb(35, 155, 86)'
-                    }
-                ]
-                individualStockCharts.push(createMultLineChart(individualStockCtx9, dataset, stock.dates));
+                individualStockCharts.push(createLineChart(individualStockCtx9, 'Turnover', stock.turnover,
+                    stock.dates));
+
+                individualStockCharts.push(createMultLineChart(individualStockCtx10, stock.sma_5, stock.sma_10,
+                    stock.sma_30, stock.dates));
+            }
+
+            function updateOriginalCharts() {
+                document.getElementById('individualStockChartContainer').style.display = 'none';
+                document.getElementById('originalCharts').style.display = 'block';
             }
 
             document.getElementById('searchButton').addEventListener('click', () => {
@@ -332,35 +603,27 @@
                     updateIndividualStockCharts(stockCode);
                 } else {
                     alert('Invalid stock code');
+                    updateOriginalCharts();
                 }
             });
 
             let currentIndex = 0;
             const slides = document.querySelector('.slides');
             const totalSlides = slides.children.length;
-            document.getElementById('prevButton').addEventListener('click', () => {
-                if (currentIndex > 0) {
-                    if (currentIndex > 0) {
-                        currentIndex--;
-                    } else {
-                        currentIndex = totalSlides - 1;
-                    }
-                    document.querySelector('.slides').style.transform =
-                        `translateX(-${currentIndex * 100}%)`;
-                }
+
+            document.getElementById('prevButton').addEventListener('click', function () {
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateSlidePosition();
             });
 
-            document.getElementById('nextButton').addEventListener('click', () => {
-                if (currentIndex < individualStockCharts.length - 1) {
-                    if (currentIndex < totalSlides - 1) {
-                        currentIndex++;
-                    } else {
-                        currentIndex = 0;
-                    }
-                    document.querySelector('.slides').style.transform =
-                        `translateX(-${currentIndex * 100}%)`;
-                }
+            document.getElementById('nextButton').addEventListener('click', function () {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlidePosition();
             });
+
+            function updateSlidePosition() {
+                slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
         });
     </script>
 </body>
