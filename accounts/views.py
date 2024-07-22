@@ -4,7 +4,6 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
-from django.contrib import messages
 from .forms import RegisterForm
 from .forms import UploadFileForm
 from django.core.files.storage import FileSystemStorage
@@ -12,9 +11,6 @@ from .models import UploadedFile
 from django.contrib.auth.decorators import login_required
 
 import pandas as pd
-import matplotlib.pyplot as plt
-from . import draw
-import json
 
 def register(request):
     if request.method == 'POST':
@@ -110,9 +106,9 @@ def visualize(request, file_id):
     stock_datas = {}
     for code in stock_codes:
         stock_df = df[df['股票代码'] == code]
-        stock_df['收盘价'].fillna(0, inplace=True)  # 替换 NaN 为 0
-        stock_df['振幅'].fillna(0, inplace=True)  # 替换 NaN 为 0
-        stock_df['换手率'].fillna(0, inplace=True)  # 替换 NaN 为 0
+        stock_df['收盘价'].fillna(0, inplace=True)  
+        stock_df['振幅'].fillna(0, inplace=True)  
+        stock_df['换手率'].fillna(0, inplace=True)  
 
         open_prices = stock_df['开盘价'].tolist()
         close_prices = stock_df['收盘价'].tolist()

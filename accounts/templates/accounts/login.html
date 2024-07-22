@@ -4,11 +4,11 @@
     <title>Stock Visualize</title>
     <style>
         body, html {
-            height: 100%; /* Full height */
-            margin: 0; /* No margins */
-            padding: 0; /* No paddings */
-            font-family: Arial, sans-serif; /* Font family */
-            background-color: #f0f0f0; /* Background color */
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            font-family: Arial, sans-serif; 
+            background-color: #f0f0f0; 
         }
 
         .container {
@@ -20,13 +20,13 @@
         }
 
         .t1 {
-            margin-bottom: 20px; /* Margin below title */
+            margin-bottom: 20px; 
         }
 
         .t2 {
             width: 100%;
-            max-width: 500px; /* Wider form */
-            padding: 30px; /* More padding inside the form */
+            max-width: 500px; 
+            padding: 30px; 
             background-color: white;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 5px;
@@ -86,7 +86,7 @@
         <div class="t2">
             <form method="post">
                 {% csrf_token %}
-                <!-- Wrap each form field in a div with class 'form-group' -->
+                
                 {% for field in form %}
                     <div class="form-group">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>

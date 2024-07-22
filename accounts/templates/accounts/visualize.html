@@ -3,7 +3,7 @@
 
 <head>
     <title>Visualize Stock Data</title>
-    {% load static %}
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 
@@ -178,12 +178,12 @@
                 return new Chart(ctx, {
                     type: 'scatter',
                     data: {
-                        labels: labels, // 使用提供的labels作为分类标签
+                        labels: labels, 
                         datasets: [{
                             label: label,
                             data: data.map((value, index) =>
-                                ({ // 将原始数据转换为{x: label, y: value}格式
-                                    x: index, // 使用索引是因为Chart.js需要数字索引，分类标签会根据索引映射
+                                ({ 
+                                    x: index,
                                     y: value
                                 })),
                             backgroundColor: 'rgba(255, 192, 203, 0.2)',
@@ -194,10 +194,10 @@
                     options: {
                         scales: {
                             x: {
-                                type: 'category', // 设置x轴为分类轴
+                                type: 'category', 
                                 ticks: {
                                     callback: function (value, index, values) {
-                                        // 返回对应的分类标签
+                                        
                                         return labels[value];
                                     }
                                 }
@@ -244,21 +244,21 @@
                 let deathCrosses10_30 = [];
 
                 for (let i = 1; i < sma5.length; i++) {
-                    // 检测SMA 5和SMA 10之间的交叉
+                    
                     if (sma5[i - 1] <= sma10[i - 1] && sma5[i] > sma10[i]) {
                         goldenCrosses5_10.push([labels[i], sma5[i]]);
                     } else if (sma5[i - 1] >= sma10[i - 1] && sma5[i] < sma10[i]) {
                         deathCrosses5_10.push([labels[i], sma5[i]]);
                     }
 
-                    // 检测SMA 5和SMA 30之间的交叉
+                    
                     if (sma5[i - 1] <= sma30[i - 1] && sma5[i] > sma30[i]) {
                         goldenCrosses5_30.push([labels[i], sma5[i]]);
                     } else if (sma5[i - 1] >= sma30[i - 1] && sma5[i] < sma30[i]) {
                         deathCrosses5_30.push([labels[i], sma5[i]]);
                     }
 
-                    // 检测SMA 10和SMA 30之间的交叉
+                    
                     if (sma10[i - 1] <= sma30[i - 1] && sma10[i] > sma30[i]) {
                         goldenCrosses10_30.push([labels[i], sma10[i]]);
                     } else if (sma10[i - 1] >= sma30[i - 1] && sma10[i] < sma30[i]) {
@@ -554,7 +554,7 @@
                 if (individualStockCharts.length > 0) {
                     individualStockCharts.forEach(chart => {
                         if (chart.dispose) {
-                            // 适用于 ECharts 实例
+                            // 适用于 ECharts 
                             chart.dispose();
                         } else if (chart.destroy) {
                             // 适用于 Chart.js 实例

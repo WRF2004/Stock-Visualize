@@ -12,12 +12,12 @@ class RegisterForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
-        self.fields['username'].help_text = None  # 移除帮助文本
-        self.fields['username'].label = "Username"  # 修改字段标签
-        self.fields['password1'].help_text = None  # 移除帮助文本
-        self.fields['password1'].label = "Password"  # 修改字段标签
-        self.fields['password2'].help_text = None  # 移除帮助文本
-        self.fields['password2'].label = "Re-enter password"  # 修改字段标签
+        self.fields['username'].help_text = None  
+        self.fields['username'].label = "Username"  
+        self.fields['password1'].help_text = None  
+        self.fields['password1'].label = "Password"  
+        self.fields['password2'].help_text = None  
+        self.fields['password2'].label = "Re-enter password"  
 class UploadFileForm(forms.Form):
     file = forms.FileField()
     class Meta:
