@@ -1,4 +1,3 @@
-from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
@@ -6,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
 from .forms import RegisterForm
 from .forms import UploadFileForm
-from django.core.files.storage import FileSystemStorage
+
 from .models import UploadedFile
 from django.contrib.auth.decorators import login_required
 
