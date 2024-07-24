@@ -5,6 +5,12 @@ A Django project to implement user login registration logout, upload excel file 
 
 **项目运行**：
 
+项目依赖下载：
+
+```
+pip install -r requirements.txt
+```
+
 在项目文件目录下的命令行输入：
 
 ```
