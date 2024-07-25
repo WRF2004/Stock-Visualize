@@ -50,19 +50,19 @@ def upload_and_list_files(request):
             file = request.FILES['file']
             
             uploadFile = UploadedFile.objects.create(user=request.user, file=file)
-            # try:
-            #     file_path = uploadFile.file.path
-            #     df = pd.read_excel(file_path)
+            try:
+                file_path = uploadFile.file.path
+                df = pd.read_excel(file_path)
                 
-            # except Exception as e:
-            #     uploadFile.delete()  # 删除失败上传记录
-            #     return render(request, 'accounts/upload_and_list.html', {
-            #         'form': form,
-            #         'files': UploadedFile.objects.filter(user=request.user).order_by('-upload_time'),
-            #         'last_login': request.user.last_login,
-            #         'username': request.user.username,
-            #         'error': f'读取文件时出错，请上传格式正确的文件'
-            #     })
+            except Exception as e:
+                uploadFile.delete()  # 删除失败上传记录
+                return render(request, 'accounts/upload_and_list.html', {
+                    'form': form,
+                    'files': UploadedFile.objects.filter(user=request.user).order_by('-upload_time'),
+                    'last_login': request.user.last_login,
+                    'username': request.user.username,
+                    'error': f'读取文件时出错，请上传格式正确的文件'
+                })
             return redirect('upload_and_list_files')
     else:
         form = UploadFileForm()
