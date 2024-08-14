@@ -73,19 +73,29 @@ Stock-Visualization-Django-Apps/
 
 ### 项目运行
 
-项目依赖下载：
+**方法一：本地运行项目**
 
-```
-pip install -r requirements.txt
-```
+* 下载依赖，在项目目录下的命令行输入命令：
 
-在项目文件目录下的命令行输入：
+  ```
+  pip install -r requirements.txt
+  ```
 
-```
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
-```
+* 在项目文件目录下的命令行分别输入三行命令：
 
-在浏览器进入网页:  http://127.0.0.1:8000/
+  ```
+  python manage.py makemigrations
+  
+  python manage.py migrate
+  
+  python manage.py runserver
+  ```
+
+* 在浏览器进入网页: http://127.0.0.1:8000
+
+ 
+
+**方法二：项目已部署在服务器中，可在线运行（注意：加载速度会有一点慢，服务器在10月份会过期）**
+
+* 直接在浏览器中输入网址：https://stockvisualize.pythonanywhere.com
 
